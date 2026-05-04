@@ -1,51 +1,41 @@
 package org.example;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Random;
 
-public class ScenePanel extends JPanel implements KeyListener {
-    private Player player;
+public class ScenePanel extends JPanel{
+    private Cat player;
+    private Platforms[] platformsArr= new Platforms[5];
 
     public ScenePanel(int x, int y, int width, int height){
         this.setBounds(x,y,width,height);
         this.setBackground(Color.lightGray);
         this.setLayout(null); //creating background
-
         this.setFocusable(true);//allows to receive key inputs
-        this.addKeyListener(this);
 
-        this.player= new Player(50,50); //creating the player ints the scene
+
+        this.player= new Cat(50,325); //creating the player ints the scene
+        this.addKeyListener(new MyKeyListener(this.player));
+
+        Random random= new Random();
+        int spacing= 60; //spacing between platforms
+        for (int i = 0; i < 5; i++) { //creating platforms with a random placing
+            int platformX= random.nextInt(401);
+            int platformY= i * spacing +50;
+
+            Color platformColor= Color.GREEN;
+            if (random.nextInt(5)==0){ //0-4 chances the platform will be breakable.
+                platformColor= Color.RED;
+            }
+
+            this.platformsArr[i]= new Platforms(platformX, platformY, platformColor);
+
+        }
+        movePlatforms();
         movePlayer();
 
     }
-
-
-    @Override
-    public void keyPressed(KeyEvent e){ //listener - checks for button pressers
-        int keyCode= e.getKeyCode();
-        System.out.println("Key pressed: "+keyCode);
-
-        if(keyCode == KeyEvent.VK_1){ // when the user press 1- moves right
-            this.player.setDirection(Player.RIGHT);
-        }else if (keyCode == KeyEvent.VK_2){ //when the user press 2- moves left
-            this.player.setDirection(Player.LEFT);
-        }else if (keyCode == KeyEvent.VK_3){//when the user press 3- moves up
-            this.player.setDirection(Player.UP);
-        }else if (keyCode == KeyEvent.VK_4){//when the user press 4- moves down
-            this.player.setDirection(Player.DOWN);
-        }else if (keyCode == KeyEvent.VK_0){//when the user press 0- stops moving
-        this.player.setDirection(Player.STAY_STILL);}
-    }
-    @Override
-    public void keyTyped(KeyEvent e){
-    }
-    @Override
-    public void keyReleased(KeyEvent e){
-    }
-
-
-
     public void movePlayer(){
         new Thread(() ->{
             while (true){
@@ -60,9 +50,33 @@ public class ScenePanel extends JPanel implements KeyListener {
         }).start();
     }
 
+    public void movePlatforms(){
+        new Thread(() ->{
+            while (true){
+                for (int i = 0; i < platformsArr.length ; i++) {
+                    if (platformsArr[i] != null){
+                        platformsArr[i].update();
+                    }
+                }
+                this.repaint(); //so we will see the movement
+                try {
+                    Thread.sleep(15);
+                } catch (InterruptedException e){
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
+    }
+
     protected void paintComponent(Graphics graphics){ //build in function in JPanel- paints the visual picture
         super.paintComponent(graphics);
         this.player.paint(graphics);
+
+        for (int i = 0; i <platformsArr.length ; i++) { //paints the platforms arr
+            if (platformsArr[i] != null){
+                platformsArr[i].paint(graphics);
+            }
+        }
 
     }
 }

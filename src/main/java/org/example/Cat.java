@@ -1,7 +1,7 @@
 package org.example;
 import java.awt.*;
 
-public class Player {
+public class Cat {
     private int x;
     private int y;
     private int direction;
@@ -12,7 +12,7 @@ public class Player {
     public static final int DOWN= 4; //when the user press 4- moves down
     public static final int SIZE= 50;
 
-    public Player(int x,int y){
+    public Cat(int x, int y){
         this.x= x;
         this.y= y;
         this.direction= STAY_STILL;
@@ -32,7 +32,10 @@ public class Player {
         switch(this.direction){
             case RIGHT -> this.x++;
             case LEFT -> this.x--;
-            case UP -> this.y--;
+            case UP -> {
+                this.y-=60;
+                this.direction= STAY_STILL;
+            }
             case DOWN -> this.y++;
         }
     }
