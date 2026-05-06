@@ -29,7 +29,12 @@ public class MyKeyListener implements KeyListener {
     public void keyTyped(KeyEvent e){
     }
     @Override
-    public void keyReleased(KeyEvent e){
+    public void keyReleased(KeyEvent e) {
+        int keyCode = e.getKeyCode();
+        // כשעוזבים את החץ ימינה או שמאלה - הדמות עוצרת במקום
+        if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_LEFT) {
+            this.player.setDirection(Cat.STAY_STILL);
+        }
     }
 
 }
